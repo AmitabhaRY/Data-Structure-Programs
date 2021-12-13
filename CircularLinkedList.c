@@ -1,4 +1,4 @@
-// Program implementing a single linked list.
+// Program implementing a circular linked list.
 // Written by Amitabha Roy, Roll-No: 19012.
 // Note: Name entries with white-spaces are not supported by the program.
 
@@ -10,50 +10,76 @@ typedef struct _SLinkedList
 {
     int nStudentRollNo;
     char* sStudentName;
+    struct _SLinkedList* pPrevNode;
     struct _SLinkedList* pNextNode;
 } SLinkedList;
 
 // Inserts a student in the linked list.
 SLinkedList* fInsertStudent(SLinkedList* pList, int nSRoll, char* sSName)
 {
-    SLinkedList* pStudent = pList;
-
     // Allocate the first node if the list is empty.
-    if (!pStudent)
+    if (!pList)
     {
-        if (!(pStudent = (SLinkedList *) malloc(sizeof(SLinkedList)))) return 0;   
-        pStudent->nStudentRollNo = nSRoll; // Assign values to the new node...
-        pStudent->sStudentName = sSName;
-        pStudent->pNextNode = NULL;
-        return pStudent; // Return the pointer to the first node.
+        pList = (SLinkedList *) malloc(sizeof(SLinkedList));
+
+        // In case of allocation failure.
+        if (!pList) return 0;
+
+        pList->nStudentRollNo = nSRoll; // Assign values to the new node...
+        pList->sStudentName = sSName;
+        pList->pPrevNode = pList;
+        pList->pNextNode = pList;
+        
+        return pList; // Return the pointer to the first node.
     }
 
-    // Reach to the end of the list...
-    while(pStudent->pNextNode) pStudent = pStudent->pNextNode;
-    
     // Allocate a new student object.
-    if (!(pStudent->pNextNode = (SLinkedList *) malloc(sizeof(SLinkedList)))) return 0;    
-    pStudent->pNextNode->nStudentRollNo = nSRoll; // Assign values to the new node...
-    pStudent->pNextNode->sStudentName = sSName;
-    pStudent->pNextNode->pNextNode = NULL;
+    SLinkedList* pNewStudent = (SLinkedList *) malloc(sizeof(SLinkedList));
 
+    // In case of allocation failure.
+    if (!pNewStudent) return 0;    
+
+    // Assign values to the new node...
+    pNewStudent->nStudentRollNo = nSRoll;
+    pNewStudent->sStudentName = sSName;
+    pNewStudent->pPrevNode = pList->pPrevNode; // The tail of the linked list is the parent of the new node.
+    pNewStudent->pNextNode = pList; // The head node of the linked list is the child of the new node.
+    pNewStudent->pPrevNode->pNextNode = pNewStudent; // Connect the new node with the tail of the linked list.
+
+    pList->pPrevNode = pNewStudent; // Connect the new node with the head of the linked list.
+    
     // Return as success flag.
-    return pStudent;
+    return pNewStudent;
 }
 
 // Finds a student in the linked list on the basis of roll number.
 SLinkedList* fFindStudent(SLinkedList* pList, int nSRoll)
 {
+    // In case the list is empty.
+    if (!pList) 
+        return NULL;
+
+    // In case the list has only one element.
+    if (pList->pNextNode == pList)
+    {
+        if (pList->nStudentRollNo == nSRoll)
+            return pList;
+        else
+            return NULL;
+    }
+
     SLinkedList* pStudent = pList;
 
-    if (!pStudent) return NULL;
-
-    // Reach to the end of the list...
-    while(pStudent)
+    // For the case where there are more than one element.
+    do
     {
-        if (pStudent->nStudentRollNo == nSRoll) return pStudent;
+        // Check for match with given roll number.
+        if (pStudent->nStudentRollNo == nSRoll) 
+            return pStudent;
+
+        // Go to the next node.     
         pStudent = pStudent->pNextNode;
-    }
+    } while (pStudent != pList);
 
     return NULL; // Search failed..
 }
@@ -61,31 +87,24 @@ SLinkedList* fFindStudent(SLinkedList* pList, int nSRoll)
 // Deletes a particular student in the linked list.
 SLinkedList* fDeleteStudent(SLinkedList* pList, SLinkedList* pStudent)
 {
-    SLinkedList* pSTemp = pList; // Temporary student pointer...
-
     // If the list contains only one element.
-    if (pSTemp->pNextNode == NULL)
+    if (pList->pNextNode == pList)
     {
-        free(pSTemp); // Free the first node itself.
+        free(pList); // Free the first node itself.
         return NULL;
     }
-    else if (pList == pStudent) // If the first node is to be deleted.
-    {
-        pList = pStudent->pNextNode; // Take the next node as the starting node.
-        free(pStudent); // Release the first node.
-        return pList;
-    }
+    
+    // In case the reference node of the list is to be deleted. We consider the child of this node as the new reference node for the list.
+    if (pStudent == pList) 
+        pList = pList->pNextNode;
 
-    // Reach to the previous element of given node...
-    while(pSTemp)
-    {
-        // Break when the required previous node is determined.
-        if (pSTemp->pNextNode == pStudent) break;
-        pSTemp = pSTemp->pNextNode;
-    }
+    // The parent node of pStudent can be accessed directly. This is where we have an advantage in case of double linked list over single linked list.
+    // Connect the parent of pStudent with the child of pStudent child.
+    pStudent->pPrevNode->pNextNode = pStudent->pNextNode;
 
-    // Change the next node of this node to the next node of its successor.
-    pSTemp->pNextNode = pStudent->pNextNode;
+    // Connnect the child of pStudent with the parent of pStudent.  
+    pStudent->pNextNode->pPrevNode = pStudent->pPrevNode;
+
     free(pStudent); // Release the given node...
     return pList; // Return the first node pointer.
 }
@@ -103,13 +122,13 @@ void fDisplayList(SLinkedList* pList)
 
     int nCounter = 1;
 
-    // Reach to the end of the list...
-    while(pStudent)
+    // Reach to the end of the list via an exit controlled loop...
+    do
     {
         printf("%d) %s--%d\n", nCounter, pStudent->sStudentName, pStudent->nStudentRollNo); // Display student details.
         pStudent = pStudent->pNextNode;
         nCounter++;
-    }
+    } while(pStudent != pList);
 }
 
 // Main.
@@ -117,7 +136,7 @@ void main()
 {
     SLinkedList* pList = NULL; // Linked list pointer.
 
-    printf("Welcome to single linked list program!\n");
+    printf("Welcome to circular linked list program!\n");
 
     // Start an infinite for loop.
     while(1)

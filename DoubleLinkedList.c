@@ -1,5 +1,5 @@
-// Program implementing a single linked list.
-// Written by Amitabha Roy, Roll-No: 19012.
+// Program implementing a double linked list.
+// Written by Amitabha Roy, Roll-No: 19012
 // Note: Name entries with white-spaces are not supported by the program.
 
 #include<stdio.h>
@@ -10,35 +10,52 @@ typedef struct _SLinkedList
 {
     int nStudentRollNo;
     char* sStudentName;
+    struct _SLinkedList* pPrevNode;
     struct _SLinkedList* pNextNode;
 } SLinkedList;
 
 // Inserts a student in the linked list.
 SLinkedList* fInsertStudent(SLinkedList* pList, int nSRoll, char* sSName)
 {
+    // Variable for iteration purposes.
     SLinkedList* pStudent = pList;
 
     // Allocate the first node if the list is empty.
     if (!pStudent)
     {
-        if (!(pStudent = (SLinkedList *) malloc(sizeof(SLinkedList)))) return 0;   
+        pStudent = (SLinkedList *) malloc(sizeof(SLinkedList));
+
+        // In case of allocation failure.
+        if (!pStudent) return 0;
+
         pStudent->nStudentRollNo = nSRoll; // Assign values to the new node...
         pStudent->sStudentName = sSName;
         pStudent->pNextNode = NULL;
+        
         return pStudent; // Return the pointer to the first node.
     }
 
     // Reach to the end of the list...
-    while(pStudent->pNextNode) pStudent = pStudent->pNextNode;
+    while(pStudent->pNextNode) 
+        pStudent = pStudent->pNextNode;
     
     // Allocate a new student object.
-    if (!(pStudent->pNextNode = (SLinkedList *) malloc(sizeof(SLinkedList)))) return 0;    
-    pStudent->pNextNode->nStudentRollNo = nSRoll; // Assign values to the new node...
-    pStudent->pNextNode->sStudentName = sSName;
-    pStudent->pNextNode->pNextNode = NULL;
+    SLinkedList* pNewStudent = (SLinkedList *) malloc(sizeof(SLinkedList));
+
+    // In case of allocation failure.
+    if (!pNewStudent) return 0;    
+
+    // Assign values to the new node...
+    pNewStudent->nStudentRollNo = nSRoll;
+    pNewStudent->sStudentName = sSName;
+    pNewStudent->pPrevNode = pStudent; // The tail of the linked list is the parent of the new node.
+    pNewStudent->pNextNode = NULL;
+
+    // Connect the new node with the tail of the linked list.
+    pStudent->pNextNode = pNewStudent;
 
     // Return as success flag.
-    return pStudent;
+    return pNewStudent;
 }
 
 // Finds a student in the linked list on the basis of roll number.
@@ -46,12 +63,18 @@ SLinkedList* fFindStudent(SLinkedList* pList, int nSRoll)
 {
     SLinkedList* pStudent = pList;
 
-    if (!pStudent) return NULL;
+    // In case the tree is empty.
+    if (!pList) 
+        return NULL;
 
     // Reach to the end of the list...
     while(pStudent)
     {
-        if (pStudent->nStudentRollNo == nSRoll) return pStudent;
+        // Check for match with given roll number.
+        if (pStudent->nStudentRollNo == nSRoll) 
+            return pStudent;
+
+        // Go to the next node.     
         pStudent = pStudent->pNextNode;
     }
 
@@ -61,31 +84,27 @@ SLinkedList* fFindStudent(SLinkedList* pList, int nSRoll)
 // Deletes a particular student in the linked list.
 SLinkedList* fDeleteStudent(SLinkedList* pList, SLinkedList* pStudent)
 {
-    SLinkedList* pSTemp = pList; // Temporary student pointer...
-
     // If the list contains only one element.
-    if (pSTemp->pNextNode == NULL)
+    if (pList->pNextNode == NULL)
     {
-        free(pSTemp); // Free the first node itself.
+        free(pList); // Free the first node itself.
         return NULL;
     }
-    else if (pList == pStudent) // If the first node is to be deleted.
+    else if (pStudent == pList) // If the first node is to be deleted.
     {
-        pList = pStudent->pNextNode; // Take the next node as the starting node.
+        pList = pList->pNextNode; // Take the next node as the starting node.
+        pList->pPrevNode = NULL; // The head node has no parent node.
         free(pStudent); // Release the first node.
         return pList;
     }
 
-    // Reach to the previous element of given node...
-    while(pSTemp)
-    {
-        // Break when the required previous node is determined.
-        if (pSTemp->pNextNode == pStudent) break;
-        pSTemp = pSTemp->pNextNode;
-    }
+    // The parent node of pStudent can be accessed directly. This is where we have an advantage in case of double linked list over single linked list.
+    // Connect the parent of pStudent with the child of pStudent child.
+    pStudent->pPrevNode->pNextNode = pStudent->pNextNode;
 
-    // Change the next node of this node to the next node of its successor.
-    pSTemp->pNextNode = pStudent->pNextNode;
+    // In case the child of pStudent exists, then connnect it with the parent of pStudent.  
+    if (pStudent->pNextNode) pStudent->pNextNode->pPrevNode = pStudent->pPrevNode;
+
     free(pStudent); // Release the given node...
     return pList; // Return the first node pointer.
 }
@@ -117,7 +136,7 @@ void main()
 {
     SLinkedList* pList = NULL; // Linked list pointer.
 
-    printf("Welcome to single linked list program!\n");
+    printf("Welcome to double linked list program!\n");
 
     // Start an infinite for loop.
     while(1)
