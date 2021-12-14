@@ -1,5 +1,6 @@
 // Implementation of an AVL self-balancing binary tree.
-// The implementation of AVL balancing algorithm is done by me. The rest has been taken from Gopi sir's repository.
+// The implementation of AVL self-balancing algorithm has been done by Amitabha Roy, Roll No. 19012. 
+// The rest has been taken from Gopi sir's repository.
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -34,7 +35,9 @@ int assign_height(student* p_node)
 // This function balances the tree following the AVL algorithm.
 // Call this function after ensuring that the height values are properly assigned.
 // The parameter is the parent node of the node of operation.
-// Previous direction value is a flag to determine which one of LL, LR, RL, or RR rotation is required.
+/* nDirVal stores the direction of the connection betwene p_node_child and one of its child node. 
+   The child node in this context contains the newly inserted element in its subtree.
+*/  
 void avl_balance(student** p_root_node_ptr, student* p_node, student* p_node_child, int nDirVal)
 {   
     // Return in case null has been passed.
@@ -472,7 +475,8 @@ int main()
                             {
                                 // Refresh the height values of the tree.
                                 assign_height(root);
-                                // 1 - Left child. 2 - Right child.
+                                
+                                // 0 value for nDirVal since there is no node before the newly inserted node.
                                 avl_balance(&root, node, (direction == 'l') ? node->left : node->right, 0); // Balance the tree from the parent node of the new node.                                                       
                             }
                         }
