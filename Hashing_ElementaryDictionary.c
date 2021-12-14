@@ -30,13 +30,38 @@ int computeHash(char* pStr)
         return -1; // Error return.
 }
 
+// Function to check equality of two alphabetic strings independent of upper case or lower case differences.
+int caseInsensetiveStringEquality(char* pStrL, char* pStrR)
+{
+    // Compute lengths of the given string.
+    int nStrLLen = strlen(pStrL),
+        nStrRLen = strlen(pStrR);
+
+    // In case they are not of the same length.
+    if (nStrLLen != nStrRLen)
+        return 0;
+
+    for(int i = 0;i < strlen(pStrL);i++)
+    {
+        // Create a tiny string of the character at location i for using the hash function.
+        char sChArL[1] = { pStrL[i] },
+             sChArR[1] = { pStrR[i] };
+        
+        // Check if the hash code corresponding to the character at location i of pStrL is equal to that of character at location i of pStrR.
+        if (computeHash(sChArL) != computeHash(sChArR))
+            return 0;
+    }
+
+    return 1;
+}
+
 // Checks if the passed string contains only alphabets or not.
 int isAlphabeticString(char* pStr)
 {
     for(int i = 0;i < strlen(pStr);i++)
     {
         // Create a tiny string of the character at location i for using the hash function.
-        char sChAr[2] = { pStr[0], '\0'};
+        char sChAr[2] = { pStr[i] };
 
         // Check if the hash code corresponding to the character at location i is an alphabet or not via the hash function.
         if (computeHash(sChAr) == -1)
@@ -125,7 +150,7 @@ SHashTableDataNode* findWord(char* pWordStr, int nHashCode)
     // In case the list has only one element.
     if (pList->pNextNode == pList)
     {
-        if (!strcmp(pList->pStrVal, pWordStr))
+        if (caseInsensetiveStringEquality(pList->pStrVal, pWordStr))
             return pList;
         else
             return NULL;
@@ -136,8 +161,8 @@ SHashTableDataNode* findWord(char* pWordStr, int nHashCode)
     // For the case where there are more than one element.
     do
     {
-        // Check for match with given roll number.
-        if (!strcmp(pNode->pStrVal, pWordStr)) 
+        // Check for match with given word.
+        if (caseInsensetiveStringEquality(pNode->pStrVal, pWordStr)) 
             return pNode;
 
         // Go to the next node.     
@@ -298,7 +323,7 @@ void main()
                 {
                     printf("The searched word exists in the dictionary!\n");
                     printf("Hash code of the searched word: %d\n", nHashCode);
-                    printf("The searched word: %s\n", pWord);
+                    printf("The searched word: %s\n", pSTemp->pStrVal);
                 }
                 else
                     printf("The given word %s is not in the dictionary.\n", pWord);
