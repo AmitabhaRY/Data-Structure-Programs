@@ -9,6 +9,9 @@
 /* 1. For the first time, this function will iterate over the full string and compute the code.
    2. For furthur computations, the function will subtract the contribution of the first character and 
       include the contribution of the newly introduced character from the other end in the code.
+   The hash function is:-
+   H(a_1 a_2 .... a_n) = Ascii(a_1) * 1000^(n - 1) + Ascii(a_2) * 1000^(n - 2) + ... + Ascii(a_n), where each a_i is a character,
+                                                                                                   for all i = 1, 2, ..., n.
 */
 unsigned long long computeHash(char* pStr, int nSliderPos, int nSliderLen, unsigned long long nPrevHshCode, char cNewChar, char cFirstChar)
 {

@@ -1,4 +1,5 @@
 // Implementation of heap of positive integers.
+// Written by Amitabha Roy, Roll No.: 19012.
 // Both min-max modes are implemented.
 #include<stdio.h>
 #include<stdlib.h>

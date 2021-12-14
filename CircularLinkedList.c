@@ -305,7 +305,7 @@ void main()
                 return;
                 break;
         default:
-            printf("Your input is not recognised! Please try again!\n");
+            printf("Your input was not recognised! Please try again!\n");
         }
     }
 }

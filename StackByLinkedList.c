@@ -1,4 +1,5 @@
 // Implementation of a stack of integers using linked list.
+// Written by Amitabha Roy, Roll No.: 19012.
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -16,7 +17,7 @@ int nStackTop = -1; // Position marker for data in the top of the stack.
 // Function to insert an element into the stack.
 int push(int nVal)
 {
-    // Allocate a new queue node in the memory.
+    // Allocate a new stack node in the memory.
     SStack* pNewNode = (SStack *) malloc(sizeof(SStack));
 
     if (!pNewNode) return 0; // Error return.

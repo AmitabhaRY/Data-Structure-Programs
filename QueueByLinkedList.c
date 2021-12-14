@@ -1,4 +1,5 @@
 // Implementation of a queue of integers using linked list.
+// Written by Amitabha Roy, Roll No.: 19012.
 #include<stdio.h>
 #include<stdlib.h>
 

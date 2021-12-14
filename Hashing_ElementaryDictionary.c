@@ -1,4 +1,5 @@
 // This program is an implementation of an elementary dictionary using a hash table.
+// Written by Amitabha Roy, Roll No.: 19012.
 // Each partition of the set of all words is a circular linked list of words beginning with the same alphabet.
 // Note: Only words are allowed in this program.
 #include<stdio.h>
@@ -44,6 +45,31 @@ int isAlphabeticString(char* pStr)
 
     // The string contains only alphabets.
     return 1;
+}
+
+// Reads an alphabetic string from the user.
+void readAlphabeticString(char* pWord)
+{
+    // Ensure proper input.
+    while(1)
+    {
+        // Accept search word.
+        printf("Enter word (upto 100 characters only): ");
+        scanf("%s", pWord);
+
+        if (!strcmp(pWord, ""))
+        {
+            printf("Empty string is not allowed as input!Please re-enter.\n"); 
+            continue;
+        }            
+        else if (!isAlphabeticString(pWord))
+        {
+            printf("The entered word contains non-alphabets. It cannot be put in the dictionary!Please re-enter.\n");
+            continue;
+        }
+
+        break; // End the loop.
+    }                    
 }
 
 // Inserts a word in the hash table.
@@ -175,31 +201,6 @@ void displayTable()
             nCounter++;
         } while(pWordNode != pList);
     }
-}
-
-// Reads an alphabetic string from the user.
-void readAlphabeticString(char* pWord)
-{
-    // Ensure proper input.
-    while(1)
-    {
-        // Accept search word.
-        printf("Enter word (upto 100 characters only): ");
-        scanf("%s", pWord);
-
-        if (!strcmp(pWord, ""))
-        {
-            printf("Empty string is not allowed as input!Please re-enter.\n"); 
-            continue;
-        }            
-        else if (!isAlphabeticString(pWord))
-        {
-            printf("The entered word contains non-alphabets. It cannot be put in the dictionary!Please re-enter.\n");
-            continue;
-        }
-
-        break; // End the loop.
-    }                    
 }
 
 // Main function.

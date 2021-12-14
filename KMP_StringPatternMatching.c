@@ -33,7 +33,7 @@ int* generateSymmetryTable(char* pStr)
             pPrefix[j + 1] = '\0';
             pSuffix[j + 1] = '\0';   
 
-            printf("%s %s\n", pPrefix, pSuffix);
+            //printf("%s %s\n", pPrefix, pSuffix);
 
             // In case they don't match.
             if (!strcmp(pPrefix, pSuffix))
@@ -131,7 +131,7 @@ void main( )
         if (j == (nSearchLen - 1))
         {
             printf("%s found inside the string at position %d!\n", pSearchStr, i - nSearchLen + 1);
-            j = -1;
+            j = pSymTab[j];
             continue;
         }
 
